@@ -47,10 +47,10 @@ class Plugin {
     this.root = null;
     this.container = null;
     this.lock = false;
-    df.on('PlanetUpdate', this.runOnce);
+    df.ethConnection.provider.on('block', this.runOnce);
   }
 
-  async runOnce() {
+  async runOnce(latestBlockNumber) {
     if (this.lock) {
       return;
     }
@@ -66,7 +66,7 @@ class Plugin {
   }
 
   destroy() {
-    df.off('PlanetUpdate', this.runOnce);
+    df.ethConnection.provider.off('block', this.runOnce);
     render(null, this.container, this.root);
   }
 }
