@@ -47,15 +47,16 @@ class Plugin {
     this.root = null;
     this.container = null;
     this.lock = false;
-    const runOnce = async () => {
-      if (this.lock) {
-        return;
-      }
-      this.lock = true;
-      runBotOnFrame(df.getMyPlanets());
-      this.lock = false;
+    df.on('PlanetUpdate', this.runOnce);
+  }
+
+  async runOnce() {
+    if (this.lock) {
+      return;
     }
-    df.on('PlanetUpdate', runOnce);
+    this.lock = true;
+    runBotOnFrame(df.getMyPlanets());
+    this.lock = false;
   }
 
   async render(container) {
@@ -65,6 +66,7 @@ class Plugin {
   }
 
   destroy() {
+    df.off('PlanetUpdate', this.runOnce);
     render(null, this.container, this.root);
   }
 }
