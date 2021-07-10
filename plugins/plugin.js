@@ -8,43 +8,41 @@ import figures from 'https://cdn.skypack.dev/figures';
 import { html, render, useState, useLayoutEffect, useEffect } from
   "https://unpkg.com/htm/preact/standalone.module.js";
 import Strategy from './strategies'
+import {TimeKeeper, ErrorRateKeeper, Table} from './statistics'
 
 const IS_SPED_UP_DARK_FOREST = true;
-
-class TimeKeeper {
-  constructor() {
-    this.blocktime = 0
-    this.lastTickTimestamp = Math.floor(Date.now() / 1000)
-  }
-
-  tick() {
-    const k = 0.25;
-    const newTickTimestamp = Math.floor(Date.now() / 1000)
-    this.blocktime = this.blocktime * (1-k) + (newTickTimestamp - this.lastTickTimestamp) * k
-    this.lastTickTimestamp = newTickTimestamp
-    return this.blocktime
-  }
-}
+const targetFrameLength = IS_SPED_UP_DARK_FOREST ? 1500 : 15000;
 
 function App() {
   const [framelength, setFramelength] = useState(0);
+  const [frameErrorRate, setFrameErrorRate] = useState(0);
   const [planetCount, setPlanetCount] = useState(0);
+  const stats = [
+    ['Frame length:', framelength],
+    ['Planet count:', planetCount],
+    ['Frame error rate:', frameErrorRate]
+  ];
   useEffect(() => {
     const timekeeper = new TimeKeeper();
+    const errorRateKeeper = new ErrorRateKeeper(targetFrameLength);
     const runOnce = () => {
       setFramelength(timekeeper.tick())
       const planets = df.getMyPlanets()
       setPlanetCount(planets.length)
-      Strategy.Random(planets);
+      try {
+        Strategy.Random(planets)
+        setFrameErrorRate(errorRateKeeper.tick(true))
+      } catch (error) {
+        setFrameErrorRate(errorRateKeeper.tick(false))
+      }
     }
-    const intervalId = setInterval(runOnce, IS_SPED_UP_DARK_FOREST ? 1500 : 15000);
+    const intervalId = setInterval(runOnce, targetFrameLength);
     return () => clearInterval(intervalId);
   }, []);
   return html`
     <div>
       <big>Autopilot</big>
-      <p>Frame length: ${framelength}</p>
-      <p>Planet count: ${planetCount}</p>
+      ${Table(stats)}
     </div>`;
 }
 
