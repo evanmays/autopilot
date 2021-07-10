@@ -28,16 +28,24 @@ class TimeKeeper {
 
 function App() {
   const [framelength, setFramelength] = useState(0);
+  const [planetCount, setPlanetCount] = useState(0);
   useEffect(() => {
     const timekeeper = new TimeKeeper();
     const runOnce = () => {
       setFramelength(timekeeper.tick())
-      Strategy.Random(df.getMyPlanets());
+      const planets = df.getMyPlanets()
+      setPlanetCount(planets.length)
+      Strategy.Random(planets);
     }
     const intervalId = setInterval(runOnce, IS_SPED_UP_DARK_FOREST ? 1500 : 15000);
     return () => clearInterval(intervalId);
   }, []);
-  return html`<div><big>Autopilot</big><p>Frame length: ${framelength}</p></div>`;
+  return html`
+    <div>
+      <big>Autopilot</big>
+      <p>Frame length: ${framelength}</p>
+      <p>Planet count: ${planetCount}</p>
+    </div>`;
 }
 
 class Plugin {
