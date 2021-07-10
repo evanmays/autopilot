@@ -1,4 +1,4 @@
-import {randomSample, distance} from './utils'
+import {randomSample, distance, pester} from './utils'
 
 const run = (planets) => {
   const myPlanets = planets.filter(p => p.owner === df.account)
@@ -14,6 +14,6 @@ const run = (planets) => {
   })
   .sort((a, b) => a[1] - b[1])
   [0][0];
-  op.pester(source.locationId, target.locationId);
+  pester(source.locationId, target.locationId);
 }
 export default run
