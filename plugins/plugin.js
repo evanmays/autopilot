@@ -9,6 +9,8 @@ import { html, render, useState, useLayoutEffect, useEffect } from
   "https://unpkg.com/htm/preact/standalone.module.js";
 import Strategy from './strategies'
 
+const IS_SPED_UP_DARK_FOREST = true;
+
 class TimeKeeper {
   constructor() {
     this.blocktime = 0
@@ -32,7 +34,7 @@ function App() {
       setFramelength(timekeeper.tick())
       Strategy.Random(df.getMyPlanets());
     }
-    const intervalId = setInterval(runOnce, 15000);
+    const intervalId = setInterval(runOnce, IS_SPED_UP_DARK_FOREST ? 1500 : 15000);
     return () => clearInterval(intervalId);
   }, []);
   return html`<div><big>Autopilot</big><p>Frame length: ${framelength}</p></div>`;
