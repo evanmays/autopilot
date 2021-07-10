@@ -47,16 +47,31 @@ class Plugin {
     this.root = null;
     this.container = null;
     this.lock = false;
-    df.ethConnection.provider.on('block', this.runOnce);
+    this.framerun = this.runOnce.bind(this)
+    df.ethConnection.provider.on('block', this.framerun);
+    this.blocktime = 0
+    this.lastTickTimestamp = Math.floor(Date.now() / 1000)
   }
 
-  async runOnce(latestBlockNumber) {
-    if (this.lock) {
-      return;
-    }
-    this.lock = true;
-    runBotOnFrame(df.getMyPlanets());
-    this.lock = false;
+  calcAverageFps() {
+    const k = 0.5;
+    const newTickTimestamp = Math.floor(Date.now() / 1000)
+    const blocktime = newTickTimestamp - this.lastTickTimestamp
+    this.lastTickTimestamp = newTickTimestamp
+    this.blocktime = this.blocktime * (1-k) + blocktime * k
+    return this.blocktime
+  }
+
+  runOnce(latestBlockNumber) {
+    setTimeout(() => {
+      if (this.lock === true) {
+        return;
+      }
+      this.lock = true;
+      console.log("its here " + this.calcAverageFps())
+      //runBotOnFrame(df.getMyPlanets());
+      this.lock = false;
+    }, 1000, this);
   }
 
   async render(container) {
@@ -66,7 +81,7 @@ class Plugin {
   }
 
   destroy() {
-    df.ethConnection.provider.off('block', this.runOnce);
+    df.ethConnection.provider.off('block', this.framerun);
     render(null, this.container, this.root);
   }
 }
