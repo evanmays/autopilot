@@ -5,7 +5,7 @@
 
 import { Manager } from "https://plugins.zkga.me/utils/RepeatAttackCore.js";
 import figures from 'https://cdn.skypack.dev/figures';
-import { html, render, useState, useLayoutEffect } from
+import { html, render, useState, useLayoutEffect, useEffect } from
   "https://unpkg.com/htm/preact/standalone.module.js";
 import Strategy from './strategies'
 
@@ -25,6 +25,15 @@ class TimeKeeper {
 }
 
 function App() {
+  useEffect(() => {
+    const timekeeper = new TimeKeeper();
+    const runOnce = () => {
+      timekeeper.tick()
+      Strategy.Random(df.getMyPlanets());
+    }
+    const intervalId = setInterval(runOnce, 15000);
+    return () => clearInterval(intervalId);
+  }, []);
   return html`<p>Hello there</p>`;
 }
 
@@ -35,13 +44,6 @@ class Plugin {
     }
     this.root = null;
     this.container = null;
-    this.intervalid = setInterval(this.runOnce.bind(this), 1500);
-    this.timekeeper = new TimeKeeper();
-  }
-
-  runOnce() {
-    this.timekeeper.tick()
-    Strategy.Random(df.getMyPlanets());
   }
 
   async render(container) {
@@ -51,7 +53,6 @@ class Plugin {
   }
 
   destroy() {
-    clearInterval(this.intervalid)
     op.killAll()
     render(null, this.container, this.root);
   }
