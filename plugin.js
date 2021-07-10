@@ -46,32 +46,22 @@ class Plugin {
     }
     this.root = null;
     this.container = null;
-    this.lock = false;
-    this.framerun = this.runOnce.bind(this)
-    df.ethConnection.provider.on('block', this.framerun);
     this.blocktime = 0
     this.lastTickTimestamp = Math.floor(Date.now() / 1000)
+    this.intervalid = setInterval(this.runOnce.bind(this), 15000);
   }
 
-  calcAverageFps() {
-    const k = 0.5;
+  calcTimeBetweenFrames() {
+    const k = 0.8;
     const newTickTimestamp = Math.floor(Date.now() / 1000)
-    const blocktime = newTickTimestamp - this.lastTickTimestamp
+    this.blocktime = this.blocktime * (1-k) + (newTickTimestamp - this.lastTickTimestamp) * k
     this.lastTickTimestamp = newTickTimestamp
-    this.blocktime = this.blocktime * (1-k) + blocktime * k
     return this.blocktime
   }
 
-  runOnce(latestBlockNumber) {
-    setTimeout(() => {
-      if (this.lock === true) {
-        return;
-      }
-      this.lock = true;
-      console.log("its here " + this.calcAverageFps())
-      //runBotOnFrame(df.getMyPlanets());
-      this.lock = false;
-    }, 1000, this);
+  runOnce() {
+    this.calcTimeBetweenFrames()
+    runBotOnFrame(df.getMyPlanets());
   }
 
   async render(container) {
@@ -81,7 +71,7 @@ class Plugin {
   }
 
   destroy() {
-    df.ethConnection.provider.off('block', this.framerun);
+    clearInterval(this.intervalid)
     render(null, this.container, this.root);
   }
 }
