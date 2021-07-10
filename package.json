@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@projectsophon/df-plugin-dev-server": "^1.3.2"
+  },
+  "scripts": {
+    "start": "df-plugin-dev-server"
+   }
+}
