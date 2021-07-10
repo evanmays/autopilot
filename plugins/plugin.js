@@ -9,6 +9,21 @@ import { html, render, useState, useLayoutEffect } from
   "https://unpkg.com/htm/preact/standalone.module.js";
 import Strategy from './strategies'
 
+class TimeKeeper {
+  constructor() {
+    this.blocktime = 0
+    this.lastTickTimestamp = Math.floor(Date.now() / 1000)
+  }
+
+  tick() {
+    const k = 0.8;
+    const newTickTimestamp = Math.floor(Date.now() / 1000)
+    this.blocktime = this.blocktime * (1-k) + (newTickTimestamp - this.lastTickTimestamp) * k
+    this.lastTickTimestamp = newTickTimestamp
+    return this.blocktime
+  }
+}
+
 function App() {
   return html`<p>Hello there</p>`;
 }
@@ -20,21 +35,12 @@ class Plugin {
     }
     this.root = null;
     this.container = null;
-    this.blocktime = 0
-    this.lastTickTimestamp = Math.floor(Date.now() / 1000)
-    this.intervalid = setInterval(this.runOnce.bind(this), 15000);
-  }
-
-  calcTimeBetweenFrames() {
-    const k = 0.8;
-    const newTickTimestamp = Math.floor(Date.now() / 1000)
-    this.blocktime = this.blocktime * (1-k) + (newTickTimestamp - this.lastTickTimestamp) * k
-    this.lastTickTimestamp = newTickTimestamp
-    return this.blocktime
+    this.intervalid = setInterval(this.runOnce.bind(this), 1500);
+    this.timekeeper = new TimeKeeper();
   }
 
   runOnce() {
-    this.calcTimeBetweenFrames()
+    this.timekeeper.tick()
     Strategy.Random(df.getMyPlanets());
   }
 
