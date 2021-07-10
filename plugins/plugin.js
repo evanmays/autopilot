@@ -16,7 +16,7 @@ class TimeKeeper {
   }
 
   tick() {
-    const k = 0.8;
+    const k = 0.25;
     const newTickTimestamp = Math.floor(Date.now() / 1000)
     this.blocktime = this.blocktime * (1-k) + (newTickTimestamp - this.lastTickTimestamp) * k
     this.lastTickTimestamp = newTickTimestamp
@@ -25,16 +25,17 @@ class TimeKeeper {
 }
 
 function App() {
+  const [framelength, setFramelength] = useState(0);
   useEffect(() => {
     const timekeeper = new TimeKeeper();
     const runOnce = () => {
-      timekeeper.tick()
+      setFramelength(timekeeper.tick())
       Strategy.Random(df.getMyPlanets());
     }
     const intervalId = setInterval(runOnce, 15000);
     return () => clearInterval(intervalId);
   }, []);
-  return html`<p>Hello there</p>`;
+  return html`<div><big>Autopilot</big><p>Frame length: ${framelength}</p></div>`;
 }
 
 class Plugin {
