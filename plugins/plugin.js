@@ -17,15 +17,18 @@ function App() {
   const [framelength, setFramelength] = useState(0);
   const [frameErrorRate, setFrameErrorRate] = useState(0);
   const [planetCount, setPlanetCount] = useState(0);
+  const [accountBalance, setAccountBalance] = useState(0);
   const stats = [
     ['Frame length:', framelength],
     ['Planet count:', planetCount],
-    ['Frame error rate:', frameErrorRate]
+    ['Frame error rate:', frameErrorRate],
+    ['Account balance: ', accountBalance]
   ];
   useEffect(() => {
     const timekeeper = new TimeKeeper();
     const errorRateKeeper = new ErrorRateKeeper(targetFrameLength);
     const runOnce = () => {
+      setAccountBalance(df.balance)
       setFramelength(timekeeper.tick())
       const planets = df.getMyPlanets()
       setPlanetCount(planets.length)
