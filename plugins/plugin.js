@@ -46,6 +46,7 @@ class Plugin {
 
   destroy() {
     clearInterval(this.intervalid)
+    op.killAll()
     render(null, this.container, this.root);
   }
 }
