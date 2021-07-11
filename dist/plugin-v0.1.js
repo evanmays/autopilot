@@ -114,7 +114,7 @@ function Table(data) {
 }
 
 // plugins/plugin.js
-var IS_SPED_UP_DARK_FOREST = true;
+var IS_SPED_UP_DARK_FOREST = false;
 var targetFrameLength = IS_SPED_UP_DARK_FOREST ? 1500 : 15e3;
 function App() {
   const [framelength, setFramelength] = useState(0);
