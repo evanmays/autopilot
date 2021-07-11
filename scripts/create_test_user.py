@@ -14,7 +14,7 @@ def createNewUser():
     newPrivateKey = myAccount.privateKey.hex()
 
     # transfer from root account to new account
-    w3.eth.send_transaction({'to': newAddress, 'value': int(1e18)}) # Idk where the money's coming from but I think this function breaks after about 1000 calls
+    w3.eth.send_transaction({'to': newAddress, 'value': int(1000e18)})
     assert w3.eth.get_balance(newAddress) > 0
 
     return newAddress, newPrivateKey
